@@ -1,4 +1,33 @@
 workflows:
+  android-workflow:
+    name: Android Workflow
+    max_build_duration: 120
+    instance_type: linux_x2
+    environment:
+      groups:
+        - keystore_credentials
+      vars:
+        FLUTTER_VERSION: "3.29.3"
+      flutter: stable
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+      - name: Build Android App Bundle
+        script: |
+          flutter build appbundle --release \
+            --build-name=1.0.0 \
+            --build-number=$(($(google-play get-latest-build-number --package-name com.fishle.fishle) + 1))
+    artifacts:
+      - build/app/outputs/**/**.aab
+    publishing:
+      email:
+        recipients:
+          - mahmutkmlk@example.com  # Email'inizi buraya yazın
+        notify:
+          success: true
+          failure: false
+
   ios-workflow:
     name: iOS Workflow
     max_build_duration: 120
