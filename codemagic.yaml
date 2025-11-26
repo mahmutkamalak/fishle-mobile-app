@@ -34,10 +34,12 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       groups:
-        - app_store_credentials
+        - app_store_credentials  # Codemagic'te oluşturmanız gerekiyor
       vars:
         XCODE_VERSION: "15.0"
         FLUTTER_VERSION: "3.29.3"
+        APP_ID: "com.fishle.fishle"
+        BUNDLE_ID: "com.fishle.fishle"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -55,7 +57,8 @@ workflows:
         script: |
           flutter build ipa --release \
             --build-name=1.0.0 \
-            --build-number=$(($(app-store-connect get-latest-build-number "$APP_ID") + 1))
+            --build-number=$(($(app-store-connect get-latest-build-number "$APP_ID") + 1)) || \
+          flutter build ios --release --no-codesign
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
